@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,9 +19,14 @@ Route::get('/', function () {
     return view('frontend.index');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', [UserController::class, 'UserDashboard'])->name('dashboard');
+    Route::post('user/profile/store', [UserController::class, 'UserProfileStore'])->name('user.profile.store');
+    Route::get('/user/logout', [UserController::class, 'UserLogout'])->name('user.logout');
+
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -28,10 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 
-require __DIR__.'/admin.php';
-require __DIR__.'/vendor.php';
-
-
+require __DIR__ . '/admin.php';
+require __DIR__ . '/vendor.php';
